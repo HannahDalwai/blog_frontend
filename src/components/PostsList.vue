@@ -14,15 +14,15 @@
       </div>
     </div>
     <div class="col-md-6">
-      <h4>Tutorials List</h4>
+      <h4>Posts List</h4>
       <ul class="list-group">
         <li class="list-group-item"
           :class="{ active: index == currentIndex }"
-          v-for="(tutorial, index) in tutorials"
+          v-for="(post, index) in posts"
           :key="index"
-          @click="setActiveTutorial(tutorial, index)"
+          @click="setActivePost(post, index)"
         >
-          {{ tutorial.title }}
+          {{ post.title }}
         </li>
       </ul>
       <button class="m-3 btn btn-sm btn-danger" @click="removeAllTutorials">
@@ -30,18 +30,18 @@
       </button>
     </div>
     <div class="col-md-6">
-      <div v-if="currentTutorial">
-        <h4>Tutorial</h4>
+      <div v-if="currentPost">
+        <h4>Post</h4>
         <div>
-          <label><strong>Title:</strong></label> {{ currentTutorial.title }}
+          <label><strong>Title:</strong></label> {{ currentPost.title }}
         </div>
         <div>
-          <label><strong>Description:</strong></label> {{ currentTutorial.description }}
+          <label><strong>Description:</strong></label> {{ currentPost.description }}
         </div>
         <div>
-          <label><strong>Status:</strong></label> {{ currentTutorial.published ? "Published" : "Pending" }}
+          <label><strong>Status:</strong></label> {{ currentPost.published ? "Published" : "Pending" }}
         </div>
-        <router-link :to="'/tutorials/' + currentTutorial.id" class="badge badge-warning">Edit</router-link>
+        <router-link :to="'/Posts/' + currentPost.id" class="badge badge-warning">Edit</router-link>
       </div>
       <div v-else>
         <br />
