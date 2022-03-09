@@ -45,8 +45,7 @@ const routes = [
   },
   {
   path: "/posts",
-  alias: "/posts",
-  name: "pots",
+  name: "PostsList",
   component: PostsList
 },
 {
