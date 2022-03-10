@@ -1,8 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
-import Login from "@/components/Login.vue";
-import Register from "@/components/Register.vue";
+import Login from "@/views/Login.vue";
+import Register from "@/views/Register.vue";
 import PostsList from "@/components/PostsList.vue";
+import AddPost from "@/components/AddPost.vue";
+import Post from "@/views/Post.vue";
 // lazy-loaded
 const Profile = () => import("@/views/Profile.vue")
 const BoardAdmin = () => import("@/components/BoardAdmin.vue")
@@ -51,7 +53,7 @@ const routes = [
 },
 {
   path: "/posts/:id",
-  name: "post-details",
+  name: "post",
   component: Post,
 },
 {
