@@ -25,7 +25,7 @@
           {{ post.title }}
         </li>
       </ul>
-      <button class="m-3 btn btn-sm btn-danger" @click="removeAllTutorials">
+      <button class="m-3 btn btn-sm btn-danger" @click="removeAllPosts">
         Remove All
       </button>
     </div>
@@ -45,28 +45,28 @@
       </div>
       <div v-else>
         <br />
-        <p>Please click on a Tutorial...</p>
+        <p>Please click on a Post...</p>
       </div>
     </div>
   </div>
 </template>
 <script>
-import TutorialDataService from "../services/TutorialDataService";
+import PostDataService from "../services/PostDataService";
 export default {
-  name: "tutorials-list",
+  name: "posts-list",
   data() {
     return {
-      tutorials: [],
-      currentTutorial: null,
+      posts: [],
+      currentPost: null,
       currentIndex: -1,
       title: ""
     };
   },
   methods: {
-    retrieveTutorials() {
-      TutorialDataService.getAll()
+    retrievePosts() {
+      PostDataService.getAll()
         .then(response => {
-          this.tutorials = response.data;
+          this.posts = response.data;
           console.log(response.data);
         })
         .catch(e => {
@@ -74,16 +74,16 @@ export default {
         });
     },
     refreshList() {
-      this.retrieveTutorials();
-      this.currentTutorial = null;
+      this.retrievePosts();
+      this.currentPost = null;
       this.currentIndex = -1;
     },
-    setActiveTutorial(tutorial, index) {
-      this.currentTutorial = tutorial;
-      this.currentIndex = tutorial ? index : -1;
+    setActivePost(post, index) {
+      this.currentPost = post;
+      this.currentIndex = post ? index : -1;
     },
-    removeAllTutorials() {
-      TutorialDataService.deleteAll()
+    removeAllPosts() {
+      PostDataService.deleteAll()
         .then(response => {
           console.log(response.data);
           this.refreshList();
@@ -94,10 +94,10 @@ export default {
     },
     
     searchTitle() {
-      TutorialDataService.findByTitle(this.title)
+      PostDataService.findByTitle(this.title)
         .then(response => {
-          this.tutorials = response.data;
-          this.setActiveTutorial(null);
+          this.posts = response.data;
+          this.setActivepost(null);
           console.log(response.data);
         })
         .catch(e => {
@@ -106,7 +106,7 @@ export default {
     }
   },
   mounted() {
-    this.retrieveTutorials();
+    this.retrievePosts();
   }
 };
 </script>
