@@ -1,114 +1,79 @@
 <template>
-  <div v-if="currentPost" class="edit-form">
-    <h4>Post</h4>
-    <form>
-      <div class="form-group">
-        <label for="title">Title</label>
-        <input type="text" class="form-control" id="title"
-          v-model="currentPost.title"
-        />
-      </div>
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input type="text" class="form-control" id="description"
-          v-model="currentPost.description"
-        />
-      </div>
-      <div class="form-group">
-        <label><strong>Status:</strong></label>
-        {{ currentPost.published ? "Published" : "Pending" }}
-      </div>
-    </form>
-    <button class="badge badge-primary mr-2"
-      v-if="currentPost.published"
-      @click="updatePublished(false)"
-    >
-      UnPublish
-    </button>
-    <button v-else class="badge badge-primary mr-2"
-      @click="updatePublished(true)"
-    >
-      Publish
-    </button>
-    <button class="badge badge-danger mr-2"
-      @click="deletePost"
-    >
-      Delete
-    </button>
-    <button type="submit" class="badge badge-success"
-      @click="updatePost"
-    >
-      Update
-    </button>
-    <p>{{ message }}</p>
+  <div v-if="blogs">
+    <h2>Blogs</h2>
+    <div class="blogs-container" v-if="blogs">
+      <router-link
+        v-for="blog of blogs"
+        :key="blog._id"
+        :to="{ name: 'BlogDetails', params: { id: blog._id } }"
+      >
+        <img :src="blog.img" :alt="blog.title" />
+        {{ blog.author_name }}
+      </router-link>
+    </div>
   </div>
-  <div v-else>
-    <br />
-    <p>Please click on a Post...</p>
-  </div>
+  <div v-else>Loading blogs...</div>
 </template>
 <script>
-import PostDataService from "../services/PostDataService";
 export default {
-  name: "post",
   data() {
     return {
-      currentPost: null,
-      message: ''
+      blogs: null,
     };
   },
-  methods: {
-    getPost(id) {
-      PostDataService.get(id)
-        .then(response => {
-          this.currentPost = response.data;
-          console.log(response.data);
+  mounted() {
+    if (localStorage.getItem("jwt")) {
+      fetch("https://generic-blog-api.herokuapp.com/posts", {
+        method: "GET",
+        headers: {
+          "Content-type": "application/json; charset=UTF-8",
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((json) => {
+          this.blogs = json;
+          this.blogs.forEach(async (blog) => {
+            await fetch(
+              "https://generic-blog-api.herokuapp.com/users/" + blog.author,
+              {
+                method: "GET",
+                headers: {
+                  "Content-type": "application/json; charset=UTF-8",
+                  Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+                },
+              }
+            )
+              .then((response) => response.json())
+              .then((json) => {
+                blog.author_name = json.name;
+              });
+          });
         })
-        .catch(e => {
-          console.log(e);
+        .catch((err) => {
+          alert("User not logged in");
         });
-    },
-    updatePublished(status) {
-      var data = {
-        id: this.currentPost.id,
-        title: this.currentPost.title,
-        description: this.currentPost.description,
-        published: status
-      };
-      PostDataService.update(this.currentPost.id, data)
-        .then(response => {
-          console.log(response.data);
-          this.currentPost.published = status;
-          this.message = 'The status was updated successfully!';
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    },
-    updatePost() {
-      PostDataService.update(this.currentPost.id, this.currentPost)
-        .then(response => {
-          console.log(response.data);
-          this.message = 'The post was updated successfully!';
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    },
-    deletePost() {
-      PostDataService.delete(this.currentPost.id)
-        .then(response => {
-          console.log(response.data);
-          this.$router.push({ name: "posts" });
-        })
-        .catch(e => {
-          console.log(e);
-        });
+    } else {
+      alert("User not logged in");
+      this.$router.push({ name: "Login" });
     }
   },
-  mounted() {
-    this.message = '';
-    this.getPost(this.$route.params.id);
-  }
 };
 </script>
+<style>
+.blogs-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-inline: auto;
+  padding: 30px;
+  gap: 2%;
+  justify-content: stretch;
+  align-items: stretch;
+  flex-direction: column;
+}
+
+img {
+  max-width: 50vw;
+}
+</style>
